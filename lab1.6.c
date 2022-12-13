@@ -1,22 +1,24 @@
-// lab1_6.cpp : Defines the entry point for the console application.
-//
-
 #include "stdafx.h"
 #include <Windows.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <conio.h>
-VOID WINAPI Sleep(DWORD dwMilliseconds);
 
+int minimum(int, int);
 
 int main()
 {
-    const int columns = 80;
-    const int rows = 24;
-    const int right = columns - 1;
-    const int bottom = rows - 1;
-    const int delay = 20;
+    _getch();
+    int columns, rows;
     HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(hout, &csbi);
+    columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    rows = csbi.srWindow.Bottom - csbi.srWindow.Top;
+
+    int right = columns - 1;
+    int bottom = rows - 1;
+    int delay = 20;
+    int min = minimum(columns, rows);
 
     COORD Pos;
     Pos.X = columns - 1;
@@ -24,11 +26,12 @@ int main()
 
     SetConsoleCursorPosition(hout, Pos);
 
-    for (int p = 0; p < rows / 2; p++) {
+    for (int p = 0; p < min/2; p++) {
         for (int i = p; i < bottom - p; i++)              //↓
         {
             Pos.Y = i;
             SetConsoleCursorPosition(hout, Pos);
+            SetConsoleTextAttribute(hout, FOREGROUND_GREEN);
             printf("#");
             Sleep(delay);
         }
@@ -37,7 +40,8 @@ int main()
         {
             Pos.X = j;
             SetConsoleCursorPosition(hout, Pos);
-            printf("&");
+            SetConsoleTextAttribute(hout, FOREGROUND_BLUE);
+            printf("#");
             Sleep(delay);
         }
         Pos.X--;
@@ -45,7 +49,8 @@ int main()
         {
             Pos.Y = i;
             SetConsoleCursorPosition(hout, Pos);
-            printf("5");
+            SetConsoleTextAttribute(hout, FOREGROUND_GREEN);
+            printf("#");
             Sleep(delay);
         }
         Pos.Y--;
@@ -53,9 +58,43 @@ int main()
         {
             Pos.X = j;
             SetConsoleCursorPosition(hout, Pos);
-            printf("@");
+            SetConsoleTextAttribute(hout, FOREGROUND_BLUE);
+            printf("#");
             Sleep(delay);
         }
     }
+    if (min % 2 != 0)
+    {
+        if (min == columns)
+        {
+            for (int i = Pos.Y; i <= bottom - min / 2; i++)
+            {
+                Pos.Y = i;
+                SetConsoleCursorPosition(hout, Pos);
+                SetConsoleTextAttribute(hout, FOREGROUND_GREEN);
+                printf("#");
+                Sleep(delay);
+            }
+        }
+        else
+        {
+            Pos.Y++;
+            for (int j = right - min/2; j >= min/2; j--)
+            {
+                Pos.X = j;
+                SetConsoleCursorPosition(hout, Pos);
+                SetConsoleTextAttribute(hout, FOREGROUND_GREEN);
+                printf("#");
+                Sleep(delay);
+            }
+
+        }
+    }
     _getch();
+}
+
+int minimum(int one, int two)
+{
+    if (one > two) return two;
+    else return one;
 }
